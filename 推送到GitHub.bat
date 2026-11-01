@@ -1,7 +1,7 @@
 @echo off
 setlocal
 set "APP=%~dp0"
-set "GIT=D:\Tools\PortableGit\cmd\git.exe"
+set "GIT=D:\Git\cmd\git.exe"
 if not exist "%GIT%" set "GIT=git"
 cd /d "%APP%"
 
