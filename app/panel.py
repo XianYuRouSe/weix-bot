@@ -424,7 +424,10 @@ class Panel:
         box = self._card(body, "发送开关")
         self.var_send_enabled = tk.BooleanVar(value=True)
         ttk.Checkbutton(box, text="允许真实发送（关掉 = 安全模式：只生成回复并写日志，不往微信里发）",
-                        variable=self.var_send_enabled).pack(anchor="w", padx=16, pady=(0, 14))
+                        variable=self.var_send_enabled).pack(anchor="w", padx=16, pady=(0, 6))
+        self.var_log_content = tk.BooleanVar(value=True)
+        ttk.Checkbutton(box, text="日志记录聊天正文（关掉 = 只记字数，日志可以放心贴到 issue 里）",
+                        variable=self.var_log_content).pack(anchor="w", padx=16, pady=(0, 14))
 
         box = self._card(body, "节奏")
         g = tk.Frame(box, bg=CARD)
@@ -1300,6 +1303,7 @@ class Panel:
             getattr(self, "var_" + key).set(str(cfg.get(key) or ""))
         try:
             self.var_send_enabled.set(bool(cfg.get("send_enabled", True)))
+            self.var_log_content.set(bool(cfg.get("log_content", True)))
         except Exception:
             pass
 
@@ -1415,6 +1419,7 @@ class Panel:
 
         try:
             cfg["send_enabled"] = bool(self.var_send_enabled.get())
+            cfg["log_content"] = bool(self.var_log_content.get())
         except Exception:
             pass
 

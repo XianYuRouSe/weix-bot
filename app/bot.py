@@ -197,6 +197,19 @@ def _log_monthly_maintenance() -> None:
         pass
 
 
+# 日志里要不要记录聊天正文。False（默认给分发的版本）时只记长度，
+# 这样用户把日志贴到 issue 里也不会泄露对话内容。
+LOG_CONTENT = True
+
+
+def mask(text: str) -> str:
+    """按配置决定日志里是留正文还是只留长度。"""
+    t = (text or "").strip()
+    if LOG_CONTENT or not t:
+        return t
+    return "[%d字]" % len(t)
+
+
 def log(msg: str) -> None:
     line = "%s | %s" % (time.strftime("%Y-%m-%d %H:%M:%S"), msg)
     _log_monthly_maintenance()
@@ -239,7 +252,9 @@ def read_env() -> dict:
 
 class Bot:
     def __init__(self) -> None:
+        global LOG_CONTENT
         self.cfg = json.load(open(CONFIG, encoding="utf-8"))
+        LOG_CONTENT = bool(self.cfg.get("log_content", True))
         self.env = read_env()
         self.whitelist = {k: v for k, v in (self.cfg.get("whitelist") or {}).items()}
         self.db_dir, self.keys = wcdb.load_keys()
@@ -848,6 +863,7 @@ class Bot:
 
     def reload_config(self) -> None:
         """配置文件变了就重载，让面板改参数立刻生效。"""
+        global LOG_CONTENT
         try:
             mt = os.path.getmtime(CONFIG)
         except OSError:
@@ -859,6 +875,7 @@ class Bot:
         except Exception:
             return
         self._cfg_mtime = mt
+        LOG_CONTENT = bool(self.cfg.get("log_content", True))
         self.refresh_whitelist()
         log("配置已重载 | 合并=%ss | 间隔=%ss" % (
             self.cfg.get("debounce_seconds"), self.cfg.get("min_reply_interval")))
@@ -949,7 +966,7 @@ class Bot:
                 return
             norm = "".join(text.split())
             if ("%s|%s" % (chat, norm)) in self.sent_texts:
-                log("跳过自己发出的回声: %s" % text[:30])
+                log("跳过自己发出的回声: %s" % mask(text)[:30])
                 return
         else:
             # 图片/语音等：内容字段是二进制，只用类型标记参与回复
@@ -967,7 +984,7 @@ class Bot:
                 if len(box) < 15:
                     m["_text"] = text
                     box.append(m)
-                log("睡眠时段，先记下待回: %s" % text[:20])
+                log("睡眠时段，先记下待回: %s" % mask(text)[:20])
                 return
 
         key = chat
@@ -983,7 +1000,7 @@ class Bot:
         elif btype == 34:
             buf["has_voice"] = True
         buf["deadline"] = time.time() + float(self.cfg.get("debounce_seconds", 8))
-        log("入缓冲 chat=%s 第%d条: %s" % (chat, len(buf["texts"]), text[:30]))
+        log("入缓冲 chat=%s 第%d条: %s" % (chat, len(buf["texts"]), mask(text)[:30]))
 
     def flush(self, now: int) -> None:
         for chat in list(self.pending.keys()):
@@ -1006,12 +1023,12 @@ class Bot:
             if buf.get("has_voice"):
                 spoken = self.transcribe_voice(name)
                 if spoken:
-                    log("语音转文字: %s" % spoken[:50])
+                    log("语音转文字: %s" % mask(spoken)[:50])
                     combined = "[语音]（转文字：%s）\n%s" % (spoken, combined)
             if buf.get("has_image"):
                 desc = self.describe_last_image(name)
                 if desc:
-                    log("图片内容: %s" % desc[:60])
+                    log("图片内容: %s" % mask(desc)[:60])
                     combined = "[图片]（图片里是：%s）\n%s" % (desc, combined)
             reply = self.generate(chat, combined, woke_up=bool(buf.get("woke_up")),
                                   cut_ts=cut_ts)
@@ -1025,19 +1042,19 @@ class Bot:
                 continue
             if not bool(self.cfg.get("send_enabled", True)):
                 # 安全模式（默认给新装的人开）：只生成、只记日志，不往微信里发
-                log("安全模式·只生成不发送 chat=%s name=%s reply=%s" % (chat, name, reply[:40]))
+                log("安全模式·只生成不发送 chat=%s name=%s reply=%s" % (chat, name, mask(reply)[:40]))
                 continue
             self.sent_texts["%s|%s" % (chat, "".join(reply.split()))] = time.time()
             self.recent_sent.setdefault(chat, []).append((time.time(), reply))
             self.recent_sent[chat] = self.recent_sent[chat][-5:]
-            log("发送 chat=%s name=%s 唯一性=%s reply=%s" % (chat, name, why, reply[:40]))
+            log("发送 chat=%s name=%s 唯一性=%s reply=%s" % (chat, name, why, mask(reply)[:40]))
             res = wxsend.send_to(name, reply)
             self.last_sent[chat] = time.time()
             if res["ok"]:
                 if self.confirm_sent(chat, reply):
                     log("发送成功并已回读确认 name=%s" % name)
                 else:
-                    log("已发送但回读未确认 name=%s reply=%s（请人工核对）" % (name, reply[:30]))
+                    log("已发送但回读未确认 name=%s reply=%s（请人工核对）" % (name, mask(reply)[:30]))
             else:
                 log("发送失败 stage=%s note=%s" % (res["stage"], res["note"]))
 

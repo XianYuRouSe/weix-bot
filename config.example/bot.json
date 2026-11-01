@@ -78,5 +78,6 @@
     ],
     "sleepy_minutes": 30
   },
-  "send_enabled": false
+  "send_enabled": false,
+  "log_content": false
 }
