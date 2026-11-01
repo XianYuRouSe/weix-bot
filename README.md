@@ -14,6 +14,15 @@
 > * 识别的聊天内容会被发送给模型服务商（默认 DeepSeek）用于生成回复，请自行判断是否接受。
 > * 本项目与腾讯无关，未获其授权。
 
+## 下载
+
+- **开箱即用**（Windows x64，不用装 Python）：
+  [weix-bot-0.1.1-exe.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.1/weix-bot-0.1.1-exe.zip)（13 MB）
+- **纯源码**（需要 Python 3.9+）：
+  [weix-bot-0.1.1.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.1/weix-bot-0.1.1.zip)（0.11 MB）
+
+全部版本见 [Releases](https://github.com/XianYuRouSe/weix-bot/releases)。
+
 ## 它能做什么
 
 - 只对**白名单里的人**自动回复，其他会话一概不碰；
