@@ -11,9 +11,16 @@
 from __future__ import annotations
 
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.environ.get("WEIX_HOME") or os.path.dirname(HERE)
+
+# 打包成 exe 后，配置和日志放在 exe 旁边，而不是 PyInstaller 的临时解包目录
+FROZEN = bool(getattr(sys, "frozen", False))
+if FROZEN:
+    ROOT = os.environ.get("WEIX_HOME") or os.path.dirname(os.path.abspath(sys.executable))
+else:
+    ROOT = os.environ.get("WEIX_HOME") or os.path.dirname(HERE)
 
 CONFIG_DIR = os.path.join(ROOT, "config")
 LOG_DIR = os.path.join(ROOT, "logs")

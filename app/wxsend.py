@@ -23,7 +23,19 @@ import paths
 
 BASE = paths.ROOT
 CACHE = paths.CACHE_DIR
-OCR_PS1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ocr.ps1")
+
+
+def _ocr_script() -> str:
+    """ocr.ps1 的位置：源码运行在 app/ 下，打包后放在 exe 旁边的 app/ 下。"""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in (os.path.join(here, "ocr.ps1"),
+                 os.path.join(paths.ROOT, "app", "ocr.ps1")):
+        if os.path.isfile(cand):
+            return cand
+    return os.path.join(here, "ocr.ps1")
+
+
+OCR_PS1 = _ocr_script()
 os.makedirs(CACHE, exist_ok=True)
 
 # DPI 感知：不设的话 GetWindowRect 返回逻辑坐标、截图是物理像素，125% 缩放下会差一大截

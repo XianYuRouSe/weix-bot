@@ -27,3 +27,6 @@ dist/
 
 # 打包拦截规则（含本机 wxid / 路径），不进仓库
 packaging.private.txt
+out-exe/
+build-exe/
+_dist/
