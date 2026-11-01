@@ -93,3 +93,6 @@ Write-Host ("   已生成 {0}（{1} KB）" -f $zip, $size) -ForegroundColor Gree
 Get-ChildItem $stage -Recurse -File | ForEach-Object {
   Write-Host ("   + " + $_.FullName.Substring($stage.Length).TrimStart('\'))
 }
+
+# 清掉中间目录，别留在安装目录里
+Remove-Item  -Recurse -Force -ErrorAction SilentlyContinue
