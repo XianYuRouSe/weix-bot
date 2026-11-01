@@ -17,9 +17,9 @@
 ## 下载
 
 - **开箱即用**（Windows x64，不用装 Python）：
-  [weix-bot-0.1.1-exe.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.1/weix-bot-0.1.1-exe.zip)（13 MB）
+  [weix-bot-0.1.2-exe.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.2/weix-bot-0.1.2-exe.zip)（13 MB）
 - **纯源码**（需要 Python 3.9+）：
-  [weix-bot-0.1.1.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.1/weix-bot-0.1.1.zip)（0.11 MB）
+  [weix-bot-0.1.2.zip](https://github.com/XianYuRouSe/weix-bot/releases/download/v0.1.2/weix-bot-0.1.2.zip)（0.11 MB）
 
 全部版本见 [Releases](https://github.com/XianYuRouSe/weix-bot/releases)。
 
