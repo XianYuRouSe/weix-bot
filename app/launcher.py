@@ -32,7 +32,7 @@ def _version() -> str:
     import paths
     p = os.path.join(paths.ROOT, "VERSION")
     try:
-        with open(p, encoding="utf-8") as f:
+        with open(p, encoding="utf-8-sig") as f:
             return f.read().strip()
     except OSError:
         return "dev"

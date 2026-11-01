@@ -19,6 +19,7 @@ $include = @(
   "assets\make_icon.ps1", "assets\make_shortcut.ps1",
   "config.example\*.json",
   "docs\*.md",
+  ".github\ISSUE_TEMPLATE\*.md",
   "LICENSE", "README.md", ".gitignore", "VERSION",
   "首次配置.bat", "启动机器人.bat", "停止机器人.bat", "打开控制面板.bat"
 )
@@ -73,7 +74,7 @@ if ($bad.Count -gt 0) {
 Write-Host "   干净：没有 wxid / API key / 聊天库 / 本机路径"
 
 Write-Host "== 4/4 生成清单并压缩 =="
-Set-Content -Path (Join-Path $stage "VERSION") -Value $Version -Encoding UTF8
+[System.IO.File]::WriteAllText((Join-Path $stage "VERSION"), $Version, (New-Object System.Text.UTF8Encoding($false)))
 $lines = @("weix-bot $Version", "")
 foreach ($f in Get-ChildItem $stage -Recurse -File | Sort-Object FullName) {
   $rel = $f.FullName.Substring($stage.Length).TrimStart('\')
@@ -95,4 +96,4 @@ Get-ChildItem $stage -Recurse -File | ForEach-Object {
 }
 
 # 清掉中间目录，别留在安装目录里
-Remove-Item  -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue
